@@ -1,0 +1,65 @@
+# Data catalog & governance policy — dealer service data product
+# Pattern mirrors enterprise metadata platforms (Informatica EDC / Data Privacy
+# Management): every column carries classification, lineage, and policy.
+
+product:
+  name: dealer_service_analytics
+  owner: analytics_engineering
+  steward: data_governance_office
+  refresh: daily_batch
+  consumers: [service_ops_dashboard, dealer_scorecards, warranty_finance]
+
+classification_levels:
+  PUBLIC: no restriction
+  INTERNAL: business data, no individual identifiers
+  PII_INDIRECT: identifies an individual in combination (VIN, phone_last4)
+  PII_DIRECT: identifies an individual alone (never stored raw in warehouse)
+
+datasets:
+  fact_repair_orders:
+    grain: one row per validated repair order
+    lineage: dms_repair_orders.csv -> validate -> pii_minimize -> load
+    columns:
+      ro_number:          {classification: INTERNAL}
+      total_amount:       {classification: INTERNAL}
+      satisfaction_score: {classification: INTERNAL, source: customer_surveys.json}
+  dim_customer:
+    grain: one row per distinct customer
+    columns:
+      email_hash:      {classification: PII_INDIRECT, transform: sha256, raw_source: customer_email}
+      phone_last4:     {classification: PII_INDIRECT, transform: truncate_last4, raw_source: customer_phone}
+      consent_status:  {classification: INTERNAL}
+  dim_vehicle:
+    columns:
+      vin: {classification: PII_INDIRECT, note: joinable to registration data}
+
+privacy_policies:
+  - id: DP-1
+    regulation: [CCPA, GDPR-Art5-1c]   # data minimization
+    rule: >
+      Direct identifiers (email, full phone) are transformed at ETL time;
+      raw values never persist in the warehouse or any downstream product.
+  - id: DP-2
+    regulation: [CCPA-1798.105, GDPR-Art17]   # right to delete / erasure
+    rule: >
+      Deletion requests execute against dim_customer by email_hash; facts
+      retain surrogate keys only, so erasure does not corrupt aggregates.
+    procedure: sql/deletion_request.sql
+  - id: DP-3
+    regulation: [GDPR-Art5-1e]   # storage limitation
+    rule: >
+      Source extracts containing raw PII are purged after successful load
+      (retention: 7 days for reprocessing window). Warehouse retains
+      pseudonymized records for 36 months, then aggregates only.
+  - id: DP-4
+    regulation: [CCPA-1798.120]   # opt-out of sale/sharing
+    rule: >
+      consent_status = 'ccpa_opt_out' rows are excluded from any extract
+      shared outside the service-operations boundary.
+
+access_model:
+  roles:
+    analyst:        {tables: [fact_repair_orders, dim_dealer, dim_vehicle, dim_date], pii: none}
+    cx_researcher:  {tables: all, pii: PII_INDIRECT, approval: steward}
+    governance:     {tables: all, pii: all, approval: standing}
+  default: deny
