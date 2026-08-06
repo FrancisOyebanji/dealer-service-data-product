@@ -1,0 +1,116 @@
+{
+  "model_metrics": {
+    "churn_roc_auc": 0.7217,
+    "churn_pr_auc": 0.7004,
+    "lift_at_10pct": 1.66
+  },
+  "retention_drivers": {
+    "months_since_last_service": 0.2606,
+    "in_warranty": 0.1838,
+    "vehicle_age": 0.1477,
+    "distance_to_dealer_mi": 0.0971,
+    "prior_visits": 0.0726,
+    "avg_satisfaction": 0.0601,
+    "repeat_repair_rate": 0.0571,
+    "total_service_spend": 0.0451,
+    "customer_pay_share": 0.0387,
+    "avg_wait_days": 0.0279,
+    "had_recall": 0.0092
+  },
+  "service_retention_kpis": {
+    "overall_retention_rate_pct": 51.2,
+    "by_warranty": {
+      "in_warranty": 68.8,
+      "out_of_warranty": 40.7
+    },
+    "by_region": {
+      "Midwest": 50.5,
+      "Northeast": 52.0,
+      "Southeast": 50.3,
+      "Southwest": 51.1,
+      "West": 52.0
+    },
+    "by_model": {
+      "Altima": 49.5,
+      "Rogue": 50.1,
+      "Frontier": 50.9,
+      "Pathfinder": 51.2,
+      "Murano": 52.0,
+      "Kicks": 52.1,
+      "Sentra": 52.5
+    }
+  },
+  "prescriptive": {
+    "at_risk_customers": 2250,
+    "action_mix": {
+      "service_recovery_outreach": 1399,
+      "lapsed_maintenance_reminder": 735,
+      "warranty_expiry_offer": 18,
+      "loyalty_discount": 17,
+      "recall_completion_followup": 43,
+      "personalized_service_reminder": 38
+    }
+  },
+  "sample_recommendations": [
+    {
+      "customer_key": "CU008071",
+      "churn_risk": 0.979,
+      "recommended_action": "service_recovery_outreach",
+      "expected_value": 4.896
+    },
+    {
+      "customer_key": "CU001282",
+      "churn_risk": 0.977,
+      "recommended_action": "service_recovery_outreach",
+      "expected_value": 4.884
+    },
+    {
+      "customer_key": "CU011779",
+      "churn_risk": 0.977,
+      "recommended_action": "lapsed_maintenance_reminder",
+      "expected_value": 2.93
+    },
+    {
+      "customer_key": "CU005941",
+      "churn_risk": 0.973,
+      "recommended_action": "service_recovery_outreach",
+      "expected_value": 4.863
+    },
+    {
+      "customer_key": "CU001415",
+      "churn_risk": 0.971,
+      "recommended_action": "service_recovery_outreach",
+      "expected_value": 4.857
+    },
+    {
+      "customer_key": "CU007893",
+      "churn_risk": 0.97,
+      "recommended_action": "service_recovery_outreach",
+      "expected_value": 4.849
+    },
+    {
+      "customer_key": "CU000521",
+      "churn_risk": 0.969,
+      "recommended_action": "lapsed_maintenance_reminder",
+      "expected_value": 2.908
+    },
+    {
+      "customer_key": "CU012284",
+      "churn_risk": 0.969,
+      "recommended_action": "service_recovery_outreach",
+      "expected_value": 4.845
+    },
+    {
+      "customer_key": "CU009131",
+      "churn_risk": 0.968,
+      "recommended_action": "lapsed_maintenance_reminder",
+      "expected_value": 2.904
+    },
+    {
+      "customer_key": "CU008932",
+      "churn_risk": 0.968,
+      "recommended_action": "lapsed_maintenance_reminder",
+      "expected_value": 2.904
+    }
+  ]
+}

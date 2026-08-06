@@ -1,0 +1,6 @@
+# Data product ETL uses the Python standard library (sqlite3).
+# Service Retention analytics layer:
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.3
+pytest>=7.0

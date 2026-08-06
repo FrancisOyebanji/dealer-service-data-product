@@ -1,8 +1,37 @@
-# Dealer Service Analytics — End-to-End Data Product
+# Dealer Aftersales Analytics — Service Retention & Data Product
 
-**A governed, dimensional data product for automotive dealer service operations: heterogeneous source integration → ETL with data quality gates → star-schema warehouse → KPI library → dashboard, with a CCPA/GDPR-aligned governance catalog.**
+**Automotive Aftersales analytics: a predictive/prescriptive Service Retention layer (churn model, retention drivers, KPIs, and targeted outreach recommendations) on top of a governed, dimensional dealer-service data product (ETL → star-schema warehouse → KPIs → dashboard). SQL, Python, Snowflake-style marts, Power BI-style dashboards.**
 
-> **In one breath:** Architected an end-to-end analytics data product integrating heterogeneous dealer service sources (DMS extracts, nested survey APIs, vehicle master data) into a dimensional star-schema warehouse with automated data quality gates, ETL audit reconciliation, and UAT-style acceptance testing. Implemented a column-level data governance catalog with CCPA/GDPR-aligned privacy policies — PII minimization at transform time, erasure-safe key design, and role-based access tiers — feeding a curated KPI layer and interactive dashboard.
+> **In one breath (Service Retention focus):** Built a Service Retention analytics solution for automotive Aftersales — a predictive churn model (0.72 AUC, 1.7x lift on the top-decile at-risk customers) that surfaces the retention drivers (service recency, warranty status, vehicle age, repeat-repair rate), Service Retention KPIs segmented by region/warranty/model, and a prescriptive layer that recommends a targeted retention action per at-risk customer ranked by churn-risk × value — all sitting on a governed star-schema dealer-service data product with ETL, data-quality gates, and a CCPA/GDPR governance catalog.
+
+---
+
+## Service Retention analytics (headline for the Aftersales role)
+
+The predictive/prescriptive layer that drives "insights and recommendations around Service Retention and related KPIs":
+
+```bash
+PYTHONPATH=src python src/retention/generate_service_history.py   # 15k customers w/ known churn drivers
+PYTHONPATH=src python -m retention.retention_analytics            # model + KPIs + prescription
+PYTHONPATH=src python src/retention/build_retention_dashboard.py  # Power BI-style readout
+```
+
+| Component | What it delivers |
+|---|---|
+| **Churn/retention model** ([retention_analytics.py](src/retention/retention_analytics.py)) | Predicts non-return; **0.72 AUC**, **1.7x lift** at top-10% risk; recovers the true drivers (recency, warranty, vehicle age) |
+| **Service Retention KPIs** | Overall retention rate + segmented by region, warranty status, and model — the Aftersales scorecard |
+| **Prescriptive outreach** | Per at-risk customer: recommended action (lapsed-maintenance reminder, warranty-expiry offer, service recovery, loyalty, recall follow-up) ranked by churn-risk × value |
+| **Snowflake marts** ([service_retention_marts.sql](sql/service_retention_marts.sql)) | Retention feature view + KPI views feeding Power BI, with a QUALIFY-based at-risk targeting query |
+
+The model is **graded against a known churn process** (the generator constructs the drivers), so a test asserts it recovers service recency and warranty status as the top retention levers — the domain-authentic Service Retention drivers.
+
+---
+
+## The underlying data product (foundation)
+
+**A governed, dimensional data product for dealer service operations: heterogeneous source integration → ETL with data quality gates → star-schema warehouse → KPI library → dashboard, with a CCPA/GDPR-aligned governance catalog.**
+
+> Architected an end-to-end analytics data product integrating heterogeneous dealer service sources (DMS extracts, nested survey APIs, vehicle master data) into a dimensional star-schema warehouse with automated data quality gates, ETL audit reconciliation, and UAT-style acceptance testing. Implemented a column-level data governance catalog with CCPA/GDPR-aligned privacy policies — PII minimization at transform time, erasure-safe key design, and role-based access tiers — feeding a curated KPI layer and interactive dashboard.
 
 ## The data product loop
 
