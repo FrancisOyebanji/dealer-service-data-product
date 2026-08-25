@@ -1,0 +1,38 @@
+-- Dataform ELT model definitions (SQLX) — version-controlled, dependency-graphed
+-- BigQuery transformations with built-in assertions (data-quality tests).
+-- This is the "modeling" layer of the reference architecture; Dataform compiles
+-- the ref() graph and orchestrates incremental builds.
+
+-- ============================ staging ============================
+config { type: "view", schema: "staging", description: "Cleaned repair-order events" }
+
+SELECT
+  ro_number,
+  CAST(dealer_key AS INT64)          AS dealer_key,
+  DATE(service_date)                 AS service_date,
+  service_type,
+  CAST(total_amount AS NUMERIC)      AS total_amount,
+  satisfaction_score
+FROM ${ref("raw", "service_events")}
+WHERE ro_number IS NOT NULL
+  AND total_amount >= 0
+
+-- ============================ assertions ========================
+-- (In Dataform, these live in the config block; shown here for reference.)
+-- assertions: {
+--   uniqueKey: ["ro_number"],
+--   nonNull: ["ro_number", "service_date", "dealer_key"],
+--   rowConditions: ["total_amount >= 0",
+--                   "service_type in ('scheduled_maintenance','warranty_repair','customer_pay_repair','recall','diagnostic')"]
+-- }
+
+-- ============================ mart ==============================
+-- config { type: "table", schema: "gold",
+--          bigquery: { partitionBy: "month", clusterBy: ["dealer_key"] },
+--          assertions: { rowConditions: ["ro_count > 0"] } }
+--
+-- SELECT DATE_TRUNC(service_date, MONTH) AS month, dealer_key,
+--        COUNT(*) AS ro_count, SUM(total_amount) AS total_revenue,
+--        AVG(satisfaction_score) AS avg_csat
+-- FROM ${ref("staging", "service_events")}
+-- GROUP BY month, dealer_key

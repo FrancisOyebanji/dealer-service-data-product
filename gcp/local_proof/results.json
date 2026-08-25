@@ -1,0 +1,32 @@
+{
+  "fact_rows": 500000,
+  "mart_rows": 1098,
+  "partition_pruning": {
+    "rows_total": 500000,
+    "scanned_without_optimization": 500000,
+    "scanned_partition_only": 28651,
+    "scanned_partition_plus_cluster": 252,
+    "cost_reduction_vs_full_scan_pct": 99.95,
+    "note": "rows scanned is a proxy for BigQuery bytes scanned (on-demand $/TiB)"
+  },
+  "top_mart_rows": [
+    {
+      "month": "2025-01-01",
+      "dealer_key": 35,
+      "ro_count": 552,
+      "total_revenue": 529863.64
+    },
+    {
+      "month": "2025-01-01",
+      "dealer_key": 51,
+      "ro_count": 559,
+      "total_revenue": 524060.82
+    },
+    {
+      "month": "2025-03-01",
+      "dealer_key": 43,
+      "ro_count": 536,
+      "total_revenue": 515659.35
+    }
+  ]
+}
